@@ -1,6 +1,5 @@
 package com.educandoweb.course.services.exceptions;
 
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public class ResourceNotFoundException extends RuntimeException {
 
