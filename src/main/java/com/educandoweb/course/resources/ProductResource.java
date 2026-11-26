@@ -1,6 +1,6 @@
 package com.educandoweb.course.resources;
 
-import com.educandoweb.course.entities.Product;
+import com.educandoweb.course.DTO.ProductDTO;
 import com.educandoweb.course.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,23 +18,29 @@ public class ProductResource {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> findAll(){
-        List<Product> products = productService.findAll();
+    public ResponseEntity<List<ProductDTO>> findAll(){
+        List<ProductDTO> products = productService.findAll();
         return ResponseEntity.ok().body(products);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id){
-        Product product = productService.findById(id);
+
+    public ResponseEntity<ProductDTO> findById(@PathVariable Long id){
+        ProductDTO product = productService.findById(id);
         return ResponseEntity.ok().body(product);
     }
 
     @PostMapping
-    public ResponseEntity<Product> insert(@RequestBody Product product){
-        product = productService.insert(product);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(product.getId()).toUri();
-        return ResponseEntity.created(uri).body(product);
+    public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO product){
+        ProductDTO productDTO = productService.insert(product);
+        URI uri = ServletUriComponentsBuilder.
+                fromCurrentRequest().
+                path("/{id}").
+                buildAndExpand(productDTO.getId()).
+                toUri();
+        return ResponseEntity.created(uri).body(productDTO);
     }
+
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
@@ -43,9 +49,9 @@ public class ProductResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id,@RequestBody Product product){
-        product = productService.update(id, product);
-        return ResponseEntity.ok().body(product);
+    public ResponseEntity<ProductDTO> update(@PathVariable Long id,@RequestBody ProductDTO product){
+        ProductDTO productDTO = productService.update(id, product);
+        return ResponseEntity.ok().body(productDTO);
     }
 
 }

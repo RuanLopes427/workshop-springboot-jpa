@@ -1,11 +1,10 @@
 package com.educandoweb.course.resources;
 
-import com.educandoweb.course.entities.User;
+import com.educandoweb.course.DTO.UserDTO;
+import com.educandoweb.course.DTO.UserInsertDTO;
 import com.educandoweb.course.services.UserService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,23 +19,28 @@ public class UserResource {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll(){
-        List<User> users = userService.findAll();
+    public ResponseEntity<List<UserDTO>> findAll(){
+        List<UserDTO> users = userService.findAll();
         return ResponseEntity.ok().body(users);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long id){
-        User obj = userService.findById(id);
+    public ResponseEntity<UserDTO> findById(@PathVariable Long id){
+        UserDTO obj = userService.findById(id);
         return ResponseEntity.ok().body(obj);
     }
 
     @PostMapping
-    public ResponseEntity<User> insert(@RequestBody User obj){
-        obj = userService.insert(obj);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
-        return ResponseEntity.created(uri).body(obj);
+    public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO obj){
+        UserDTO userDTO = userService.insert(obj);
+        URI uri = ServletUriComponentsBuilder.
+                fromCurrentRequest().
+                path("/{id}").
+                buildAndExpand(userDTO.getId()).
+                toUri();
+        return ResponseEntity.created(uri).body(userDTO);
     }
+
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
@@ -45,9 +49,9 @@ public class UserResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User obj){
-        obj = userService.update(id, obj);
-        return ResponseEntity.ok().body(obj);
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO obj){
+        UserDTO userDTO = userService.update(id, obj);
+        return ResponseEntity.ok().body(userDTO);
     }
 
 

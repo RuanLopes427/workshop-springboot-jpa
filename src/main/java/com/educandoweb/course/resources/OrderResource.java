@@ -1,6 +1,6 @@
 package com.educandoweb.course.resources;
 
-import com.educandoweb.course.entities.Order;
+import com.educandoweb.course.DTO.OrderDTO;
 import com.educandoweb.course.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +18,20 @@ public class OrderResource {
     private OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> findAll(){
-        List<Order> orders = orderService.findAll();
+    public ResponseEntity<List<OrderDTO>> findAll(){
+        List<OrderDTO> orders = orderService.findAll();
         return ResponseEntity.ok().body(orders);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Order> findById(@PathVariable Long id){
-        Order obj = orderService.findById(id);
+    public ResponseEntity<OrderDTO> findById(@PathVariable Long id){
+        OrderDTO obj = orderService.findById(id);
         return ResponseEntity.ok().body(obj);
     }
 
     @PostMapping
-    public ResponseEntity<Order> insert(@RequestBody Order obj){
-        Order order = orderService.insert(obj);
+    public ResponseEntity<OrderDTO> insert(@RequestBody OrderDTO obj){
+        OrderDTO order = orderService.insert(obj);
         URI uri = ServletUriComponentsBuilder.
                 fromCurrentRequest().
                 path("/{id}").
@@ -47,8 +47,8 @@ public class OrderResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Order> update(@PathVariable Long id, @RequestBody Order order){
-        Order obj = orderService.update(id, order);
+    public ResponseEntity<OrderDTO> update(@PathVariable Long id, @RequestBody OrderDTO order){
+        OrderDTO obj = orderService.update(id, order);
         return ResponseEntity.ok().body(obj);
     }
 

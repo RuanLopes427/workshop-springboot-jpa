@@ -1,10 +1,11 @@
 package com.educandoweb.course.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_category")
@@ -28,6 +29,11 @@ public class Category implements Serializable {
         this.id = id;
         this.name = name;
     }
+    public Category(Category category){
+        this.setId(category.getId());
+        this.setName(category.getName());
+        this.products = category.getProducts();
+    }
 
     public Long getId() {
         return id;
@@ -44,6 +50,8 @@ public class Category implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Set<Product> getProducts(){ return this.products; }
 
     @Override
     public boolean equals(Object o) {

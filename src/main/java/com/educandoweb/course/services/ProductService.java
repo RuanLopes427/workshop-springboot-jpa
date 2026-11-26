@@ -1,5 +1,6 @@
 package com.educandoweb.course.services;
 
+import com.educandoweb.course.DTO.ProductDTO;
 import com.educandoweb.course.entities.Product;
 import com.educandoweb.course.repositories.ProductRepository;
 import com.educandoweb.course.services.exceptions.DatabaseException;
@@ -7,29 +8,38 @@ import com.educandoweb.course.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
+@Transactional
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
 
-
-    public List<Product> findAll(){
-        return productRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<ProductDTO> findAll(){
+        List<Product> list = productRepository.findAll();
+        return list.stream().map(ProductDTO::new).toList();
     }
 
-    public Product findById(Long id){
-        Optional<Product> obj = productRepository.findById(id);
-        return obj.orElseThrow(() -> new ResourceNotFoundException(id));
+    @Transactional(readOnly = true)
+    public ProductDTO findById(Long id){
+        Product obj = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        return new ProductDTO(obj);
     }
 
-    public Product insert(Product obj){ return productRepository.save(obj); }
+    public ProductDTO insert(ProductDTO obj){
+        Product product = new Product();
+        copyDtoToEntity(product, obj);
+        product = productRepository.save(product);
+        return new ProductDTO(product);
+    }
 
-
+    @Transactional(propagation = Propagation.SUPPORTS)
    public void delete(Long id){
         try {
             if (productRepository.existsById(id)) {
@@ -42,13 +52,13 @@ public class ProductService {
         }
   }
 
-  public Product update(Long id, Product obj){
+  public ProductDTO update(Long id, ProductDTO obj){
         Product product = productRepository.getReferenceById(id);
-        updateData(product, obj);
-        return productRepository.save(product);
+        copyDtoToEntity(product, obj);
+        return new ProductDTO(productRepository.save(product));
   }
 
-    private void updateData(Product product, Product obj) {
+    private void copyDtoToEntity(Product product, ProductDTO obj) {
         product.setName(obj.getName());
         product.setDescription(obj.getDescription());
         product.setImgUrl(obj.getImgUrl());

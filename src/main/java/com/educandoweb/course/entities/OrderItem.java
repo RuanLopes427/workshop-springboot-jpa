@@ -2,7 +2,9 @@ package com.educandoweb.course.entities;
 
 import com.educandoweb.course.entities.pk.OrderItemPk;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import java.io.Serializable;
 import java.util.Objects;

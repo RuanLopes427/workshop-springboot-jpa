@@ -1,5 +1,6 @@
 package com.educandoweb.course.services;
 
+import com.educandoweb.course.DTO.OrderDTO;
 import com.educandoweb.course.entities.Order;
 import com.educandoweb.course.repositories.OrderRepository;
 import com.educandoweb.course.services.exceptions.DatabaseException;
@@ -7,29 +8,38 @@ import com.educandoweb.course.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
+@Transactional
 @Service
 public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
 
-    public List<Order> findAll() {
-        return orderRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<OrderDTO> findAll() {
+        List<Order> list = orderRepository.findAll();
+        return list.stream().map(OrderDTO::new).toList();
     }
 
-    public Order findById(Long id) {
-        Optional<Order> obj = orderRepository.findById(id);
-        return obj.orElseThrow(() -> new ResourceNotFoundException(id));
+    @Transactional(readOnly = true)
+    public OrderDTO findById(Long id) {
+       Order obj = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        return new OrderDTO(obj);
     }
 
-    public Order insert(Order obj) {
-        return orderRepository.save(obj);
+    public OrderDTO insert(OrderDTO obj) {
+        Order order = new Order();
+        copyDtoToEntity(order, obj);
+        order = orderRepository.save(order);
+       return new OrderDTO(order);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id) {
         try {
             if (orderRepository.existsById(id)) {
@@ -42,13 +52,13 @@ public class OrderService {
         }
     }
 
-    public Order update(Long id, Order obj){
+    public OrderDTO update(Long id, OrderDTO obj){
         Order order = orderRepository.getReferenceById(id);
-        updateData(order, obj);
-        return orderRepository.save(order);
+        copyDtoToEntity(order, obj);
+        return new OrderDTO(orderRepository.save(order));
     }
 
-    private void updateData(Order order, Order obj) {
+    private void copyDtoToEntity(Order order, OrderDTO obj) {
         order.setOrderStatus(obj.getOrderStatus());
 
     }
